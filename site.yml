@@ -1,0 +1,5 @@
+---
+- import_playbook: playbook-common.yml
+- import_playbook: playbook-login.yml
+- import_playbook: playbook-head.yml
+- import_playbook: playbook-compute.yml

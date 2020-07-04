@@ -1,0 +1,5 @@
+- name: Install Singularity
+  import_tasks: singularity.yml
+
+- name: HPC optimization
+  import_tasks: system.yml

@@ -1,0 +1,53 @@
+- name: CentOS package installation
+  package:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - "@Development Tools"
+    - openssl-devel
+    - libuuid-devel
+    - squashfs-tools
+    - libseccomp-devel
+    - wget
+    - pkgconfig
+    - git
+    - go
+    - cryptsetup
+
+- name: Download the release
+  get_url:
+    url: "https://github.com/hpcng/singularity/releases/download/v{{singularity_version}}/singularity-{{singularity_version}}.tar.gz"
+    dest: "/tmp/singularity-{{singularity_version}}.tar.gz"
+    mode: 0644
+
+- name: Create a directory
+  file:
+    path: "/opt/singularity-{{singularity_version}}"
+    state: directory
+    mode: 0755
+
+- name: Untar the archive
+  unarchive:
+    src: "/tmp/singularity-{{singularity_version}}.tar.gz" 
+    dest: "/opt/singularity-{{singularity_version}}"
+    extra_opts: [--strip-components=1]
+    remote_src: yes
+
+- name: Execute mconfig
+  shell: ./mconfig chdir="/opt/singularity-{{singularity_version}}"
+  environment:
+    GOPATH: "{{singularity_go_path}}"
+    PATH: "{{singularity_go_path}}/bin:/usr/local/bin:{{ansible_env.PATH}}"
+
+- name: Make build
+  shell: make -C builddir chdir="/opt/singularity-{{singularity_version}}"
+  environment:
+    GOPATH: "{{singularity_go_path}}"
+    PATH: "{{singularity_go_path}}/bin:/usr/local/bin:{{ansible_env.PATH}}"
+
+- name: Make install
+  shell: make -C builddir install chdir="/opt/singularity-{{singularity_version}}"
+  environment:
+    GOPATH: "{{singularity_go_path}}"
+    PATH: "{{singularity_go_path}}/bin:/usr/local/bin:{{ansible_env.PATH}}"

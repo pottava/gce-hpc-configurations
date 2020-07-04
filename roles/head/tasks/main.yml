@@ -1,0 +1,7 @@
+- name: Set hostfile
+  copy:
+    src: /apps/hostfile
+    dest: "/home/{{ item }}"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+  with_items: "{{ users }}"

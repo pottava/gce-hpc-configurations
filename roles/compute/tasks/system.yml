@@ -1,0 +1,66 @@
+- name: Add or modify hard nofile limits for wildcard domain
+  pam_limits:
+    domain: '*'
+    limit_type: "{{ item.limit_type }}"
+    limit_item: "{{ item.limit_item }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { limit_type: '-', limit_item: 'nproc', value: 'unlimited' }
+    - { limit_type: '-', limit_item: 'memlock', value: 'unlimited' }
+    - { limit_type: '-', limit_item: 'stack', value: 'unlimited' }
+    - { limit_type: '-', limit_item: 'nofile', value: 1048576 }
+    - { limit_type: '-', limit_item: 'cpu', value: 'unlimited' }
+    - { limit_type: '-', limit_item: 'rtprio', value: 'unlimited' }
+
+- name: Setup sysctl
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    ignoreerrors: yes
+  with_items:
+    - name: net.ipv4.tcp_rmem
+      value: 4096 87380 16777216
+    - name: net.ipv4.tcp_wmem
+      value: 4096 16384 16777216
+
+- name: Reload settings from all system configuration files
+  shell: sysctl -p
+
+- name: Use the network-latency profile
+  shell: tuned-adm profile network-latency
+
+- name: Stop and disable firewalld
+  service:
+    name: firewalld
+    state: stopped
+    enabled: False
+
+- name: Initialize GRUB cmdline
+  shell: sed -i 's/spectre_v2=off .*/\"/' /etc/default/grub
+  args:
+    warn: no
+
+- name: Configuring GRUB cmdline
+  shell: sed -i 's/^GRUB_CMDLINE_LINUX=\"\(.*\)\"/GRUB_CMDLINE_LINUX=\"\1 spectre_v2=off nopti spec_store_bypass_disable=off noht nosmt nr_cpus={{ cpus }}\"/' /etc/default/grub
+  args:
+    warn: no
+
+- name: Turn off Hyperthreading, Meltdown and Spectre mitigation
+  shell: grub2-mkconfig -o /boot/efi/EFI/centos/grub.cfg
+
+- name: Reboot nodes
+  shell: sleep 2 && shutdown -r now "Ansible reboot"
+  async: 1
+  poll: 0
+  ignore_errors: true
+
+- name: Wait for server to come back
+  become: false
+  local_action: wait_for
+  args:
+    host: "{{ inventory_hostname }}"
+    port: 22
+    state: started
+    delay: 30
+    timeout: 300

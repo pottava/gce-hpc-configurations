@@ -1,0 +1,6 @@
+---
+- hosts: compute
+  become: true
+  roles:
+    - compute
+    - pbs

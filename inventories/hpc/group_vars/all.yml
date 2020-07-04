@@ -1,0 +1,9 @@
+---
+cpus: 2
+
+users:
+  - user01
+  - user02
+
+pbs_server_hostname: hpc-controller
+singularity_version: "3.5.3"
