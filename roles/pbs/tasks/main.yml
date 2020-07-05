@@ -2,10 +2,10 @@
   include_vars: "{{ item }}"
   with_first_found:
     - files:
-      - "setup-{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
-      - "setup-{{ ansible_distribution }}.yml"
-      - "setup-{{ ansible_os_family }}-{{ ansible_distribution_major_version }}.yml"
-      - "setup-{{ ansible_os_family }}.yml"
+      - "setup-{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version }}.yml"
+      - "setup-{{ ansible_distribution | lower }}.yml"
+      - "setup-{{ ansible_os_family | lower }}-{{ ansible_distribution_major_version }}.yml"
+      - "setup-{{ ansible_os_family | lower }}.yml"
       - "setup.yml"
 
 - name: Build OpenPBS

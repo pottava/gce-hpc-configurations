@@ -48,13 +48,8 @@
     - postgresql-contrib
     - python-psycopg2
 
-- name: Check if OpenPBS is already installed
-  shell: ls /etc/init.d/pbs 2>/dev/null | wc -l
-  register: pbs_installed
-
 - name: PostgreSQL initialize DB
   shell: postgresql-setup initdb
-  when: pbs_installed.stdout == "0"
   ignore_errors: true
 
 - name: Start PBS servers

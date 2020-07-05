@@ -47,7 +47,7 @@
     warn: no
 
 - name: Turn off Hyperthreading, Meltdown and Spectre mitigation
-  shell: grub2-mkconfig -o /boot/efi/EFI/centos/grub.cfg
+  shell: grub2-mkconfig -o /boot/efi/EFI/{{ ansible_distribution | lower }}/grub.cfg
 
 - name: Reboot nodes
   shell: sleep 2 && shutdown -r now "Ansible reboot"

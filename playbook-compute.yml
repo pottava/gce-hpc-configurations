@@ -2,5 +2,8 @@
 - hosts: compute
   become: true
   roles:
-    - compute
-    - pbs
+    - role: common
+    - role: compute
+    - role: pbs
+      pbs_server: False
+      pbs_run_job_on_server: True

@@ -1,4 +1,4 @@
-- name: CentOS package installation
+- name: Package installation
   package:
     name: "{{ item }}"
     state: present
@@ -14,6 +14,7 @@
     - git
     - go
     - cryptsetup
+  when: ansible_distribution == 'CentOS' or ansible_os_family == "RedHat"
 
 - name: Download the release
   get_url:
