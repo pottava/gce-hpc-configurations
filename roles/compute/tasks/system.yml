@@ -41,10 +41,10 @@
   args:
     warn: no
 
-- name: Configuring GRUB cmdline
-  shell: sed -i 's/^GRUB_CMDLINE_LINUX=\"\(.*\)\"/GRUB_CMDLINE_LINUX=\"\1 spectre_v2=off nopti spec_store_bypass_disable=off noht nosmt nr_cpus={{ cpus }}\"/' /etc/default/grub
-  args:
-    warn: no
+# - name: Configuring GRUB cmdline
+#   shell: sed -i 's/^GRUB_CMDLINE_LINUX=\"\(.*\)\"/GRUB_CMDLINE_LINUX=\"\1 spectre_v2=off nopti spec_store_bypass_disable=off noht nosmt nr_cpus={{ cpus }}\"/' /etc/default/grub
+#   args:
+#     warn: no
 
 - name: Turn off Hyperthreading, Meltdown and Spectre mitigation
   shell: grub2-mkconfig -o /boot/efi/EFI/{{ ansible_distribution | lower }}/grub.cfg
